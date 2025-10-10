@@ -1,9 +1,8 @@
-# Archive Studio
+# Archive Studio with macOS Silicon and Intel Releases
 
-[![Version](https://img.shields.io/badge/Version-1.0%20beta-blue.svg)](https://github.com/mhumphries2323/ArchiveStudio) <!-- Replace with actual repo link -->
-[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+#### NOTE: This fork of [Mark Humphries'](https://github.com/mhumphries2323) [Archive Studio](https://github.com/mhumphries2323/ArchiveStudio) contains built binaries for both Intel (x86_64) and Silicon (aarch64) macOS (tested with Sequoia 15.7). It also contains support for TIF/TIFF and JP2 images via drag and drop to the GUI or from File > Import Images from Folder; TIF/TIFF, JP2, and PNG files imported via the File menu are converted to .jpg images and the originals are moved to a subfolder named 'original_non-jpeg_images'. 
 
-A desktop application for Microsoft Windows designed to assist historians, archivists, and researchers in processing, transcribing, and analyzing historical documents using Large Language Models (LLMs) via API services (OpenAI, Google, and Anthropic).
+A desktop application designed to assist historians, archivists, and researchers in processing, transcribing, and analyzing historical documents using Large Language Models (LLMs) via API services (OpenAI, Google, and Anthropic).
 
 ---
 
