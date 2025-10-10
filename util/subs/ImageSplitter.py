@@ -363,7 +363,7 @@ class ImageSplitter(tk.Toplevel):
             self.set_temp_dir()
             
             # Look for image files in the temp directory
-            image_files = [file for file in os.listdir(self.temp_folder) if file.lower().endswith((".jpg", ".jpeg"))]
+            image_files = [file for file in os.listdir(self.temp_folder) if file.lower().endswith((".jpg", ".jpeg", ".png", ".tif", ".tiff", ".jp2"))]
             
             # Handle case where no images are found
             if not image_files:
@@ -2470,7 +2470,8 @@ class ImageSplitter(tk.Toplevel):
                 try:
                     files_copied = 0
                     for file in os.listdir(self.folder_path):
-                        if file.lower().endswith((".jpg", ".jpeg")):
+                        lower_file = file.lower()
+                        if lower_file.endswith((".jpg", ".jpeg")):
                             src = os.path.join(self.folder_path, file)
                             # Copy to temp (working directory)
                             dst = os.path.join(self.temp_folder, file)
@@ -2479,7 +2480,33 @@ class ImageSplitter(tk.Toplevel):
                             orig_dst = os.path.join(self.originals_folder, file)
                             shutil.copy2(src, orig_dst)
                             files_copied += 1
-                    
+                        elif lower_file.endswith((".png", ".tif", ".tiff", ".jp2")):
+                            # Convert non-JPEG formats to JPEG
+                            src = os.path.join(self.folder_path, file)
+                            try:
+                                img = Image.open(src)
+                                # Handle transparency by adding white background
+                                if img.mode in ('RGBA', 'LA'):
+                                    background = Image.new('RGB', img.size, (255, 255, 255))
+                                    alpha_mask = img.split()[-1] if len(img.split()) > 3 else None
+                                    background.paste(img, mask=alpha_mask)
+                                    img = background
+                                # Convert to RGB if not already
+                                if img.mode != 'RGB':
+                                    img = img.convert('RGB')
+
+                                # Save as JPEG with original base name
+                                base_name = os.path.splitext(file)[0]
+                                jpeg_name = base_name + '.jpg'
+                                dst = os.path.join(self.temp_folder, jpeg_name)
+                                orig_dst = os.path.join(self.originals_folder, jpeg_name)
+
+                                img.save(dst, 'JPEG', quality=95)
+                                img.save(orig_dst, 'JPEG', quality=95)
+                                files_copied += 1
+                            except Exception as convert_error:
+                                print(f"Error converting {file} to JPEG: {convert_error}")
+
                     # If we didn't find any images, print a warning
                     if files_copied == 0:
                         print(f"Warning: No image files found in {self.folder_path}")

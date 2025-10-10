@@ -1556,11 +1556,62 @@ class App(TkinterDnD.Tk):
             return
 
         # Get lists of image and text files from the project_directory.
-        image_files = [f for f in os.listdir(self.project_directory) if f.lower().endswith((".jpg", ".jpeg"))]
+        all_image_files = [f for f in os.listdir(self.project_directory) if f.lower().endswith((".jpg", ".jpeg", ".png", ".tif", ".tiff", ".jp2"))]
         text_files = [f for f in os.listdir(self.project_directory) if f.lower().endswith(".txt")]
 
-        if not image_files:
+        if not all_image_files:
             messagebox.showinfo("No Files", "No image files found in the selected directory.")
+            return
+
+        # Convert non-JPEG images to JPEG
+        image_files = []
+        original_files_to_move = []  # Track files that need to be moved after conversion
+
+        for img_file in all_image_files:
+            lower_file = img_file.lower()
+            if lower_file.endswith((".jpg", ".jpeg")):
+                image_files.append(img_file)
+            elif lower_file.endswith((".png", ".tif", ".tiff", ".jp2")):
+                # Convert to JPEG
+                src_path = os.path.join(self.project_directory, img_file)
+                base_name = os.path.splitext(img_file)[0]
+                jpeg_name = base_name + '.jpg'
+                dest_path = os.path.join(self.project_directory, jpeg_name)
+
+                try:
+                    img = Image.open(src_path)
+                    # Handle transparency
+                    if img.mode in ('RGBA', 'LA'):
+                        background = Image.new('RGB', img.size, (255, 255, 255))
+                        alpha_mask = img.split()[-1] if len(img.split()) > 3 else None
+                        background.paste(img, mask=alpha_mask)
+                        img = background
+                    # Convert to RGB if needed
+                    if img.mode != 'RGB':
+                        img = img.convert('RGB')
+
+                    img.save(dest_path, 'JPEG', quality=95)
+                    image_files.append(jpeg_name)
+                    original_files_to_move.append(img_file)  # Mark for moving
+                except Exception as e:
+                    self.error_logging(f"Error converting {img_file} to JPEG", f"{e}")
+                    messagebox.showwarning("Conversion Error", f"Failed to convert {img_file}: {e}")
+
+        # Move original non-JPEG files to subdirectory
+        if original_files_to_move:
+            original_dir = os.path.join(self.project_directory, 'original_non-jpeg_images')
+            os.makedirs(original_dir, exist_ok=True)
+
+            for orig_file in original_files_to_move:
+                src = os.path.join(self.project_directory, orig_file)
+                dst = os.path.join(original_dir, orig_file)
+                try:
+                    shutil.move(src, dst)
+                except Exception as e:
+                    self.error_logging(f"Error moving {orig_file} to subdirectory", f"{e}")
+
+        if not image_files:
+            messagebox.showinfo("No Files", "No valid image files could be loaded.")
             return
 
         # Create a dictionary of text files for easy lookup by name (without extension)
@@ -1661,11 +1712,62 @@ class App(TkinterDnD.Tk):
         # self.page_counter = 0
 
         # Load image files from project_directory
-        image_files = [file for file in os.listdir(self.project_directory)
-                    if file.lower().endswith((".jpg", ".jpeg"))]
+        all_image_files = [file for file in os.listdir(self.project_directory)
+                    if file.lower().endswith((".jpg", ".jpeg", ".png", ".tif", ".tiff", ".jp2"))]
+
+        if not all_image_files:
+            messagebox.showinfo("No Files", "No image files found in the selected directory.")
+            return
+
+        # Convert non-JPEG images to JPEG
+        image_files = []
+        original_files_to_move = []  # Track files that need to be moved after conversion
+
+        for img_file in all_image_files:
+            lower_file = img_file.lower()
+            if lower_file.endswith((".jpg", ".jpeg")):
+                image_files.append(img_file)
+            elif lower_file.endswith((".png", ".tif", ".tiff", ".jp2")):
+                # Convert to JPEG
+                src_path = os.path.join(self.project_directory, img_file)
+                base_name = os.path.splitext(img_file)[0]
+                jpeg_name = base_name + '.jpg'
+                dest_path = os.path.join(self.project_directory, jpeg_name)
+
+                try:
+                    img = Image.open(src_path)
+                    # Handle transparency
+                    if img.mode in ('RGBA', 'LA'):
+                        background = Image.new('RGB', img.size, (255, 255, 255))
+                        alpha_mask = img.split()[-1] if len(img.split()) > 3 else None
+                        background.paste(img, mask=alpha_mask)
+                        img = background
+                    # Convert to RGB if needed
+                    if img.mode != 'RGB':
+                        img = img.convert('RGB')
+
+                    img.save(dest_path, 'JPEG', quality=95)
+                    image_files.append(jpeg_name)
+                    original_files_to_move.append(img_file)  # Mark for moving
+                except Exception as e:
+                    self.error_logging(f"Error converting {img_file} to JPEG", f"{e}")
+                    messagebox.showwarning("Conversion Error", f"Failed to convert {img_file}: {e}")
+
+        # Move original non-JPEG files to subdirectory
+        if original_files_to_move:
+            original_dir = os.path.join(self.project_directory, 'original_non-jpeg_images')
+            os.makedirs(original_dir, exist_ok=True)
+
+            for orig_file in original_files_to_move:
+                src = os.path.join(self.project_directory, orig_file)
+                dst = os.path.join(original_dir, orig_file)
+                try:
+                    shutil.move(src, dst)
+                except Exception as e:
+                    self.error_logging(f"Error moving {orig_file} to subdirectory", f"{e}")
 
         if not image_files:
-            messagebox.showinfo("No Files", "No image files found in the selected directory.")
+            messagebox.showinfo("No Files", "No valid image files could be loaded.")
             return
 
         # Sort image files naturally (handling both numeric and text-based filenames)
@@ -1976,7 +2078,7 @@ class App(TkinterDnD.Tk):
                 lower_path = file_path.lower()
                 if lower_path.endswith(('.jpg', '.jpeg')):
                     valid_images.append(file_path)
-                elif lower_path.endswith('.png'):
+                elif lower_path.endswith(('.png', '.tif', '.tiff', '.jp2')):
                     try:
                         img = Image.open(file_path)
                         # Ensure RGBA or LA images have a white background when converted
@@ -1997,7 +2099,7 @@ class App(TkinterDnD.Tk):
                         img.save(jpeg_path, 'JPEG', quality=95)
                         valid_images.append(jpeg_path) # Add the path of the *converted* image
                     except Exception as e:
-                        self.error_logging(f"Error converting PNG file {file_path}", f"{e}")
+                        self.error_logging(f"Error converting image file {file_path}", f"{e}")
                         invalid_files.append(file_path)
                 elif lower_path.endswith('.pdf'):
                     pdf_files.append(file_path)
