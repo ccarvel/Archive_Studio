@@ -34,7 +34,7 @@ class App(TkinterDnD.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        self.title("Archive Studio 1.2.2") # Set the window title
+        self.title("Archive Studio 1.2.2 macOS") # Set the window title
         self.link_nav = 0
         self.geometry("1200x800")
 
