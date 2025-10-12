@@ -1,9 +1,32 @@
 # Archive Studio with macOS Silicon and Intel Releases
 A desktop application designed to assist historians, archivists, and researchers in processing, transcribing, and analyzing historical documents using Large Language Models (LLMs) via API services (OpenAI, Google, and Anthropic).
 
-#### NOTE: This fork of [Mark Humphries'](https://github.com/mhumphries2323) [Archive Studio](https://github.com/mhumphries2323/ArchiveStudio) contains built binaries for both Intel (x86_64) and Silicon (aarch64) macOS (tested with Sequoia 15.7). 
+---
+### A NOTE ON THIS FORK
+This repository is a fork of [Mark Humphries'](https://github.com/mhumphries2323) [Archive Studio](https://github.com/mhumphries2323/ArchiveStudio) and contains binaries for both Intel (x86_64) and Silicon (aarch64) macOS (tested with Sequoia 15.7); and the ability to run Archive Studio with Docker and noVNC. I have attempted to add support for TIF/TIFF and JP2 images via drag and drop to the GUI and from File > Import Images from Folder; TIF/TIFF, JP2, and PNG files imported via the File menu are converted to .jpg images and the originals are moved to a subfolder named ```original_non-jpeg_images```
 
-#### It also contains support for TIF/TIFF and JP2 images via drag and drop to the GUI or from File > Import Images from Folder; TIF/TIFF, JP2, and PNG files imported via the File menu are converted to .jpg images and the originals are moved to a subfolder named 'original_non-jpeg_images'. 
+#### Check [Releases](https://github.com/ccarvel/Archive_Studio/releases) for macOS binaries
+
+---
+
+#### DOCKER
+
+A dockerized version of Archive Studio can be run with the help of:   
+```Dockerfile```  
+```start.sh```   
+```docker-compose.yml```   
+
+Together these run the Archive Studio GUI app inside Docker, accessible directly in your browser via noVNC (no native display or X server required) and works identically on macOS, Linux (Ubuntu), and Windows (via Docker Desktop).
+
+To run Archive Studio in a Docker container--
+
+0) Start Docker Desktop or Docker Engine
+1) Open a Terminal app
+2) ```git clone https://github.com/ccarvel/Archive_Studio.git```
+3) Add the files you want to recognize to the ```Archive_Studio/images``` directory
+3) ```cd Archive_Studio```
+4) ```docker compose up --build -d```
+5) Open a web browser; visit: http://localhost:6080/vnc.html?autoconnect=1&view_only=false
 
 ---
 
