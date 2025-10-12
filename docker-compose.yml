@@ -1,0 +1,28 @@
+# Archive_Studio/docker-compose.yml
+# docker compose up --build -d
+services:
+  archivestudio:
+    container_name: archivestudio
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: archivestudio:latest
+    # Map noVNC (browser) and VNC ports to the host
+    ports:
+      - "6080:6080"  # open http://localhost:6080
+      - "5901:5900"  # connect a VNC client to localhost:5900 (optional)
+    # Mount your working directory so edits reflect without rebuilds
+    volumes:
+      - ./:/app
+    # Override defaults here if desired
+    environment:
+      - KEEP_ALIVE=true
+      # Resolution/depth; examples: 1366x768x24, 1920x1080x24, 1280x800x24
+      - SCREEN_GEOMETRY=1366x768x24
+      # The command to run your Tkinter app
+      - APP_CMD=python /app/ArchiveStudio.py
+      # Ports inside the container (don't change unless you also change the host mapping above)
+      - NOVNC_PORT=6080
+      - VNC_PORT=5901
+    # Keep it running for dev; switch to "unless-stopped" for longer-running envs
+    restart: "no"
