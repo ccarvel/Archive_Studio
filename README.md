@@ -23,10 +23,10 @@ To run Archive Studio in a Docker container--
 0) Start Docker Desktop or Docker Engine
 1) Open a Terminal app
 2) ```git clone https://github.com/ccarvel/Archive_Studio.git```
-3) Add the files you want to recognize to the ```Archive_Studio/images``` directory
 3) ```cd Archive_Studio```
-4) ```docker compose up --build -d```
-5) Open a web browser; visit: http://localhost:6080/vnc.html?autoconnect=1&view_only=false
+4) Add the files you want to recognize to the ```Archive_Studio/images``` directory
+5) Back in your Terminal in the Archive_Studio directory, ```docker compose up --build -d```
+6) Open a web browser; visit: http://localhost:6080/vnc.html?autoconnect=1&view_only=false
 
 ---
 
