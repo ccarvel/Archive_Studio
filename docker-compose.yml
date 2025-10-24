@@ -18,7 +18,7 @@ services:
     environment:
       - KEEP_ALIVE=true
       # Resolution/depth; examples: 1366x768x24, 1920x1080x24, 1280x800x24
-      - SCREEN_GEOMETRY=1366x768x24
+      - SCREEN_GEOMETRY=1920x1080x24
       # The command to run your Tkinter app
       - APP_CMD=python /app/ArchiveStudio.py
       # Ports inside the container (don't change unless you also change the host mapping above)

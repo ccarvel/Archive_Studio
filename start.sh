@@ -6,10 +6,10 @@ set -euo pipefail
 # CONFIGURATION
 # ---------------------------------------------------------------------
 : "${DISPLAY:=:1}"
-: "${SCREEN_GEOMETRY:=1366x768x24}"
+: "${SCREEN_GEOMETRY:=1920x1080x24}"
 : "${NOVNC_PORT:=6080}"
 : "${VNC_PORT:=5901}"
-: "${APP_CMD:=python /app/app/app.py}"
+: "${APP_CMD:=python /app/ArchiveStudio.py}"
 : "${KEEP_ALIVE:=true}"   # <--- ADD HERE: enables keep-alive by default
 
 echo "[startup] DISPLAY=${DISPLAY}"
@@ -46,9 +46,11 @@ echo "[startup] app started (pid ${APP_PID})"
 # echo "[startup] x11vnc started (pid ${VNC_PID})"
 
 # Start Xvnc (TigerVNC) instead of Xvfb+x11vnc
-Xvnc "${DISPLAY}" -geometry "${SCREEN_GEOMETRY%x*}x${SCREEN_GEOMETRY#*x}" -depth 24 -SecurityTypes None &
-XVNC_PID=$!
-echo "[startup] Xvnc started (pid ${XVNC_PID})"
+# Xvnc "${DISPLAY}" -geometry "${SCREEN_GEOMETRY%x*}x${SCREEN_GEOMETRY#*x}" -depth 24 -SecurityTypes None &
+# XVNC_PID=$!
+x11vnc -display "${DISPLAY}" -rfbport "${VNC_PORT}" -forever -shared -nopw -repeat >/tmp/x11vnc.log 2>&1 &
+X11VNC_PID=$!
+echo "[startup] x11vnc started (pid ${X11VNC_PID})"
 
 # noVNC
 web_dir="/usr/share/novnc"
@@ -66,7 +68,7 @@ fi
 # ---------------------------------------------------------------------
 _term() {
   echo "[shutdown] stopping..."
-  kill -TERM ${NOVNC_PID:-0} ${VNC_PID:-0} ${APP_PID:-0} ${FLUX_PID:-0} ${XVFB_PID:-0} 2>/dev/null || true
+  kill -TERM ${NOVNC_PID:-0} ${X11VNC_PID:-0} ${APP_PID:-0} ${WM_PID:-0} ${XVFB_PID:-0} 2>/dev/null || true
   wait || true
   echo "[shutdown] done."
 }
